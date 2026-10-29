@@ -1,0 +1,211 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+   Design tokens — the ERP Atlas palette (erp-atlas/web/app/globals.css), so the
+   two tools read as one product: cool-neutral surfaces, solid hairline borders,
+   one teal accent, and functional per-phase colours the board reads by colour.
+
+   Light/dark resolve exactly as the legacy stylesheet did:
+     - no [data-theme]        → follow prefers-color-scheme
+     - [data-theme="dark"]    → dark, even when the OS says light
+     - [data-theme="light"]   → light, even when the OS says dark
+   These blocks are deliberately UNLAYERED so they outrank Tailwind's layers,
+   and every Tailwind colour below is an `inline` alias of one of them — which
+   is why no `dark:` variant appears anywhere in the app.
+--------------------------------------------------------------------------- */
+:root {
+  color-scheme: light;
+  --page: #f6f7f9; --surface: #ffffff; --surface-2: #f2f4f7; --surface-3: #e9edf2;
+  --text: #111827; --text2: #374151; --muted: #6b7280;
+  --border: #e3e7ed; --border-strong: #d0d6df; --grid: #eef1f5;
+  --accent: #0f766e; --accent-2: #115e59; --on-accent: #ffffff;
+  --accent-soft: #e6f4f1;
+  --good: #15803d; --warning: #b45309; --serious: #c2410c; --critical: #b91c1c;
+
+  /* per-phase accents (shared across themes — the board reads these by colour) */
+  --ph-queued: #94a3b8; --ph-intake: #06b6d4; --ph-route: #0891b2; --ph-plan: #f59e0b;
+  --ph-build: #3b82f6; --ph-verify: #8b5cf6; --ph-review: #14b8a6; --ph-ship: #22c55e;
+  --ph-archived: #9aa0ab;
+
+  --shadow-sm-token: 0 1px 2px rgba(16, 24, 40, .05);
+  --shadow-token: 0 1px 3px rgba(16, 24, 40, .08), 0 1px 2px rgba(16, 24, 40, .04);
+  --shadow-lg-token: 0 16px 40px rgba(16, 24, 40, .14);
+
+  /* terminal-style log surface — intentionally identical in both themes */
+  --log-bg: #0a0b0e; --log-fg: #b7f7c9;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --page: #0e1116; --surface: #161a21; --surface-2: #1c212a; --surface-3: #242a35;
+    --text: #e9edf3; --text2: #c6ccd6; --muted: #8b94a3;
+    --border: #262c37; --border-strong: #343c4a; --grid: #20252e;
+    --accent: #2dd4bf; --accent-2: #5eead4; --on-accent: #0e1116;
+    --accent-soft: #0f2e2b;
+    --good: #4ade80; --warning: #fbbf24; --serious: #fb923c; --critical: #f87171;
+    --shadow-sm-token: 0 1px 2px rgba(0, 0, 0, .3);
+    --shadow-token: 0 1px 3px rgba(0, 0, 0, .4);
+    --shadow-lg-token: 0 16px 40px rgba(0, 0, 0, .5);
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --page: #0e1116; --surface: #161a21; --surface-2: #1c212a; --surface-3: #242a35;
+  --text: #e9edf3; --text2: #c6ccd6; --muted: #8b94a3;
+  --border: #262c37; --border-strong: #343c4a; --grid: #20252e;
+  --accent: #2dd4bf; --accent-2: #5eead4; --on-accent: #0e1116;
+  --accent-soft: #0f2e2b;
+  --good: #4ade80; --warning: #fbbf24; --serious: #fb923c; --critical: #f87171;
+  --shadow-sm-token: 0 1px 2px rgba(0, 0, 0, .3);
+  --shadow-token: 0 1px 3px rgba(0, 0, 0, .4);
+  --shadow-lg-token: 0 16px 40px rgba(0, 0, 0, .5);
+}
+
+/* Tailwind theme layer — `inline` keeps the utilities pointing at the live custom
+   property, so a theme flip repaints without regenerating a single class. */
+@theme inline {
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-fg: var(--text);
+  --color-fg-2: var(--text2);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-grid: var(--grid);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-good: var(--good);
+  --color-warning: var(--warning);
+  --color-serious: var(--serious);
+  --color-critical: var(--critical);
+  --color-log-bg: var(--log-bg);
+  --color-log-fg: var(--log-fg);
+
+  --color-ph-queued: var(--ph-queued);
+  --color-ph-intake: var(--ph-intake);
+  --color-ph-route: var(--ph-route);
+  --color-ph-plan: var(--ph-plan);
+  --color-ph-build: var(--ph-build);
+  --color-ph-verify: var(--ph-verify);
+  --color-ph-review: var(--ph-review);
+  --color-ph-ship: var(--ph-ship);
+  --color-ph-archived: var(--ph-archived);
+
+  --radius-panel: 14px;
+  --shadow-card: var(--shadow-sm-token);
+  --shadow-pop: var(--shadow-token);
+  --shadow-drawer: var(--shadow-lg-token);
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+}
+
+@layer base {
+  * { border-color: var(--border); }
+  html { scrollbar-gutter: stable; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--text);
+    font-family: var(--font-sans);
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: color-mix(in srgb, var(--accent) 28%, transparent); }
+  /* One visible, consistent focus ring for every interactive element — the panel
+     hand-rolled focus states before, and half of them were invisible. */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+}
+
+@layer utilities {
+  /* The per-phase accent: set `--ph` on a container, read it anywhere inside. */
+  .phase-bar::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 10px; bottom: 10px;
+    width: 3px;
+    border-radius: 3px;
+    background: var(--ph, var(--muted));
+  }
+  .anim-spin { animation: ap-spin .7s linear infinite; }
+  .anim-pulse { animation: ap-pulse 1.4s ease-in-out infinite; }
+  .anim-slide-in { animation: ap-slide .18s ease-out; }
+  .anim-fade-in { animation: ap-fade .15s ease-out; }
+}
+
+@keyframes ap-spin { to { transform: rotate(360deg); } }
+@keyframes ap-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); }
+  50% { box-shadow: 0 0 0 4px transparent; }
+}
+@keyframes ap-slide { from { transform: translateX(28px); opacity: .3; } to { transform: none; opacity: 1; } }
+@keyframes ap-fade { from { opacity: 0; } to { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-spin, .anim-pulse, .anim-slide-in, .anim-fade-in { animation: none !important; }
+  * { transition-duration: 0.01ms !important; }
+}
+
+/* Markdown body — the artifact viewer (plan/design/review/ticket). */
+.md { font-size: 13px; line-height: 1.6; color: var(--text); word-break: break-word; }
+.md h1, .md h2, .md h3, .md h4, .md h5, .md h6 { font-size: 14px; margin: 15px 0 6px; letter-spacing: -.01em; font-weight: 700; }
+.md h1 { font-size: 16px; }
+.md p { margin: 6px 0; }
+.md ul { margin: 6px 0; padding-left: 21px; list-style: disc; }
+.md ol { margin: 6px 0; padding-left: 21px; list-style: decimal; }
+.md li { margin: 3px 0; }
+.md code { background: var(--surface-2); padding: 1px 5px; border-radius: 5px; font-family: var(--font-mono); font-size: 12px; }
+.md pre { background: var(--log-bg); color: var(--log-fg); padding: 11px 13px; border-radius: 9px; overflow-x: auto; font-family: var(--font-mono); font-size: 12px; }
+.md pre code { background: none; color: inherit; padding: 0; }
+.md .table-wrap { overflow-x: auto; margin: 6px 0; }
+/* table-layout: fixed makes column width come from the <colgroup> the renderer emits
+   (markdown.tsx's COLUMN_PX) rather than from cell content - without it, a single long
+   unbroken token (a file path, a grep command) in one cell forces that column wide under
+   auto-layout, squeezing every other column toward zero and wrapping their text one letter
+   per line. overflow-wrap: anywhere then lets that same long token wrap inside its now-
+   fixed-width cell instead of overflowing the table/container.
+   Those widths are pixels and the renderer also sets min-width on the table, so in a narrow
+   container (the 600px side drawer) the .table-wrap above scrolls horizontally rather than
+   compressing every column - the failure percentages caused there. */
+.md table { border-collapse: collapse; font-size: 12px; width: 100%; table-layout: fixed; }
+.md th, .md td { border: 1px solid var(--grid); padding: 5px 9px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+.md th { background: var(--surface-2); font-weight: 700; }
+.md details { border-bottom: 1px solid var(--grid); margin: 2px 0; }
+.md details:last-child { border-bottom: none; }
+.md details > summary {
+  cursor: pointer; list-style: none; font-size: 14px; font-weight: 700;
+  letter-spacing: -.01em; padding: 10px 0; color: var(--text); user-select: none;
+}
+.md details > summary::-webkit-details-marker { display: none; }
+.md details > summary::before {
+  content: '▸'; display: inline-block; width: 16px; color: var(--muted); font-size: 12px; transition: transform .15s;
+}
+.md details[open] > summary::before { transform: rotate(90deg); }
+.md details > summary:hover { color: var(--accent); }
+
+/* Sonner toasts inherit the panel palette rather than sonner's own. */
+[data-sonner-toaster] {
+  --normal-bg: var(--surface);
+  --normal-text: var(--text);
+  --normal-border: var(--border-strong);
+  --success-bg: var(--surface);
+  --success-text: var(--good);
+  --success-border: color-mix(in srgb, var(--good) 45%, var(--border));
+  --error-bg: var(--surface);
+  --error-text: var(--critical);
+  --error-border: color-mix(in srgb, var(--critical) 45%, var(--border));
+  --warning-bg: var(--surface);
+  --warning-text: var(--warning);
+  --warning-border: color-mix(in srgb, var(--warning) 45%, var(--border));
+  font-family: var(--font-sans);
+}

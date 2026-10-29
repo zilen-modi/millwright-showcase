@@ -1,0 +1,360 @@
+{
+  "_comment": "Hand-curated ground truth for the eval/regression harness (scripts/eval.mjs). Each entry is an already-merged Autopilot ticket; `expect` approximates the merged PR's diff, not a byte-exact spec — the harness scores a PRODUCED diff against it (see eval/README.md). `repo` (manifest id) and `mergedCommit` are used by --mode rerun to build in the right repo against the parent of the merged commit. Expanded 2026-08-09 (GOALS.md A6) from 2 to 19 cases, every field derived from the real merged diff via scripts/eval-lib.mjs `parseUnixDiff` — so replaying a merged diff scores ~1.0 by construction and any drift is a real regression. `lesson` names the conventions.md rule the case pins; `conventionsClean` runs scripts/conventions-lint-lib.mjs over the produced diff.",
+  "tickets": [
+    {
+      "key": "PROJ-2825",
+      "pr": 754,
+      "mergedCommit": "2d324f8b",
+      "repo": "erp-next-ui-monorepo",
+      "lesson": "tokens: bind colour to semantic tokens, never raw hex",
+      "expect": {
+        "filesTouched": [
+          "packages/erp-next-ui-kit-v2/src/components/Tag/",
+          "packages/erp-next-ui-kit-v2/src/styles/tokens/_tag.scss"
+        ],
+        "mustContain": [{ "file": "_tag.scss", "token": "tag-neutral-background" }],
+        "noRawHexInComponents": true,
+        "conventionsClean": true,
+        "testCountDelta": "positive"
+      }
+    },
+    {
+      "key": "PROJ-2832",
+      "pr": 755,
+      "repo": "erp-next-ui-monorepo",
+      "lesson": "tokens: icon colour binds a semantic token",
+      "expect": {
+        "filesTouched": ["packages/erp-next-ui-kit-v2/src/components/Checkbox/"],
+        "mustContain": [{ "file": "Checkbox.module.scss", "token": "icon-primary" }],
+        "noRawHexInComponents": true,
+        "conventionsClean": true,
+        "testCountDelta": "positive"
+      }
+    },
+    {
+      "key": "PROJ-2682",
+      "pr": 789,
+      "mergedCommit": "bc099a7f",
+      "repo": "erp-next-ui-monorepo",
+      "lesson": "net-new component: flat folder structure, themed() token binding, stories + tests",
+      "expect": {
+        "filesTouched": [
+          "packages/erp-next-ui-kit-v2/src/components/Tree/",
+          "packages/erp-next-ui-kit-v2/src/icons/",
+          "packages/erp-next-ui-kit-v2/stories/Components/Tree/",
+          "packages/erp-next-ui-kit-v2/tests/components/Tree/"
+        ],
+        "mustContain": [
+          { "file": "Tree.tsx", "token": "useTreeState" },
+          { "file": "Tree.module.scss", "token": "themed(" }
+        ],
+        "noRawHexInComponents": true,
+        "conventionsClean": true,
+        "testCountDelta": "positive"
+      }
+    },
+    {
+      "key": "PROJ-2899",
+      "pr": 763,
+      "mergedCommit": "2f7343f8",
+      "repo": "erp-next-ui-monorepo",
+      "lesson": "design fidelity: the count badge is its own element — building without Figma produced a plausible-but-wrong component",
+      "expect": {
+        "filesTouched": [
+          "packages/erp-next-ui-kit-v2/src/components/Multiselect/",
+          "packages/erp-next-ui-kit-v2/stories/Components/Multiselect/",
+          "packages/erp-next-ui-kit-v2/tests/components/Multiselect/"
+        ],
+        "mustContain": [{ "file": "Multiselect.tsx", "token": "CountChip" }],
+        "noRawHexInComponents": true,
+        "conventionsClean": true,
+        "testCountDelta": "positive"
+      }
+    },
+    {
+      "key": "PROJ-2908",
+      "pr": 771,
+      "mergedCommit": "a8f33dd2",
+      "repo": "erp-next-ui-monorepo",
+      "lesson": "micro-interactions: trailing icon buttons are tabIndex={-1}; typeahead auto-highlight needs an explicit flag so Tab cannot commit a partial async match",
+      "expect": {
+        "filesTouched": [
+          "packages/erp-next-ui-kit-v2/src/components/Combobox/",
+          "packages/erp-next-ui-kit-v2/stories/Components/Combobox/",
+          "packages/erp-next-ui-kit-v2/tests/components/Combobox/"
+        ],
+        "mustContain": [
+          { "file": "Combobox", "token": "tabIndex={-1}" },
+          { "file": "Combobox.tsx", "token": "isHighlightExplicit" }
+        ],
+        "noRawHexInComponents": true,
+        "conventionsClean": true,
+        "testCountDelta": "positive"
+      }
+    },
+    {
+      "key": "PROJ-2993",
+      "pr": 764,
+      "mergedCommit": "024e956d",
+      "repo": "erp-next-ui-monorepo",
+      "lesson": "scss-only fix still ships an scss spec test",
+      "expect": {
+        "filesTouched": [
+          "packages/erp-next-ui-kit-v2/src/components/Checkbox/Checkbox.module.scss",
+          "packages/erp-next-ui-kit-v2/tests/components/Checkbox/"
+        ],
+        "mustContain": [{ "file": "Checkbox.module.scss", "token": "padding" }],
+        "noRawHexInComponents": true,
+        "conventionsClean": true,
+        "testCountDelta": "positive"
+      }
+    },
+    {
+      "key": "PROJ-2996",
+      "pr": 774,
+      "mergedCommit": "e4bc86d3",
+      "repo": "erp-next-ui-monorepo",
+      "lesson": "story-only change: no test delta expected, and the branch name must be {type}/PROJ-n-desc",
+      "expect": {
+        "filesTouched": ["packages/erp-next-ui-kit-v2/stories/Components/Tag/"],
+        "mustContain": [{ "file": "Tag.stories.tsx", "token": "iconOptions" }],
+        "noRawHexInComponents": true,
+        "conventionsClean": true,
+        "testCountDelta": "zero"
+      }
+    },
+    {
+      "key": "PROJ-2997",
+      "pr": 775,
+      "mergedCommit": "65e010ba",
+      "repo": "erp-next-ui-monorepo",
+      "lesson": "a new public prop ships with a CSS custom property, a story and a test",
+      "expect": {
+        "filesTouched": [
+          "packages/erp-next-ui-kit-v2/src/components/Tag/",
+          "packages/erp-next-ui-kit-v2/stories/Components/Tag/",
+          "packages/erp-next-ui-kit-v2/tests/components/Tag/"
+        ],
+        "mustContain": [{ "file": "Tag.module.scss", "token": "--tag-max-width" }],
+        "noRawHexInComponents": true,
+        "conventionsClean": true,
+        "testCountDelta": "positive"
+      }
+    },
+    {
+      "key": "PROJ-2998",
+      "pr": 802,
+      "mergedCommit": "1b27e3fa",
+      "repo": "erp-next-ui-monorepo",
+      "lesson": "the visual-diff evidence postmortem — REVIEW claimed visualDiffPassRate 1.0 with zero captured screenshots",
+      "expect": {
+        "filesTouched": [
+          "packages/erp-next-ui-kit-v2/src/components/Callout/",
+          "packages/erp-next-ui-kit-v2/src/components/Notification/",
+          "packages/erp-next-ui-kit-v2/stories/Components/",
+          "packages/erp-next-ui-kit-v2/tests/components/"
+        ],
+        "mustContain": [{ "file": "Notification.tsx", "token": "role" }],
+        "noRawHexInComponents": true,
+        "conventionsClean": true,
+        "testCountDelta": "positive"
+      }
+    },
+    {
+      "key": "PROJ-3000",
+      "pr": 778,
+      "mergedCommit": "4162d212",
+      "repo": "erp-next-ui-monorepo",
+      "lesson": "keyboard behaviour: forward the consumer's onKeyDown rather than swallowing it",
+      "expect": {
+        "filesTouched": [
+          "packages/erp-next-ui-kit-v2/src/components/Checkbox/",
+          "packages/erp-next-ui-kit-v2/tests/components/Checkbox/"
+        ],
+        "mustContain": [{ "file": "Checkbox.tsx", "token": "onKeyDown" }],
+        "noRawHexInComponents": true,
+        "conventionsClean": true,
+        "testCountDelta": "positive"
+      }
+    },
+    {
+      "key": "PROJ-3012",
+      "pr": 780,
+      "mergedCommit": "4ee8e0d1",
+      "repo": "erp-next-ui-monorepo",
+      "lesson": "ESCAPED DEFECT against PROJ-2908's radio work — typography binds via the kit's type-style mixin, not an ad-hoc font declaration",
+      "escapeAgainst": "RadioButton",
+      "expect": {
+        "filesTouched": [
+          "packages/erp-next-ui-kit-v2/src/components/RadioButton/",
+          "packages/erp-next-ui-kit-v2/tests/components/RadioButton/"
+        ],
+        "mustContain": [{ "file": "RadioButton.module.scss", "token": "ui.type-style" }],
+        "noRawHexInComponents": true,
+        "conventionsClean": true,
+        "testCountDelta": "positive"
+      }
+    },
+    {
+      "key": "PROJ-3014",
+      "pr": 786,
+      "repo": "erp-next-ui-monorepo",
+      "lesson": "ESCAPED DEFECT — control geometry must come from the per-variant Figma config, not one hero value",
+      "escapeAgainst": "RadioButton",
+      "expect": {
+        "filesTouched": ["packages/erp-next-ui-kit-v2/src/components/RadioButton/"],
+        "noRawHexInComponents": true,
+        "conventionsClean": true,
+        "testCountDelta": "positive"
+      }
+    },
+    {
+      "key": "PROJ-3016",
+      "pr": 781,
+      "mergedCommit": "dae6d513",
+      "repo": "erp-next-ui-monorepo",
+      "lesson": "keyboard behaviour: Enter selects, mirroring the Checkbox fix in PROJ-3000",
+      "expect": {
+        "filesTouched": [
+          "packages/erp-next-ui-kit-v2/src/components/RadioButton/",
+          "packages/erp-next-ui-kit-v2/tests/components/RadioButton/"
+        ],
+        "mustContain": [{ "file": "RadioButton.tsx", "token": "onKeyDown" }],
+        "noRawHexInComponents": true,
+        "conventionsClean": true,
+        "testCountDelta": "positive"
+      }
+    },
+    {
+      "key": "PROJ-3020",
+      "pr": 784,
+      "mergedCommit": "08ed7ce1",
+      "repo": "erp-next-ui-monorepo",
+      "lesson": "the story must wire the handler it demonstrates, or the behaviour looks broken in Storybook",
+      "expect": {
+        "filesTouched": [
+          "packages/erp-next-ui-kit-v2/src/components/TagGroup/",
+          "packages/erp-next-ui-kit-v2/stories/Components/TagGroup/",
+          "packages/erp-next-ui-kit-v2/tests/components/TagGroup/"
+        ],
+        "mustContain": [{ "file": "TagGroup.tsx", "token": "onDismiss" }],
+        "noRawHexInComponents": true,
+        "conventionsClean": true,
+        "testCountDelta": "positive"
+      }
+    },
+    {
+      "key": "PROJ-3021",
+      "pr": 785,
+      "mergedCommit": "3688a2c7",
+      "repo": "erp-next-ui-monorepo",
+      "lesson": "roving arrow-key focus is a behaviour with its own story and test, not a visual",
+      "expect": {
+        "filesTouched": [
+          "packages/erp-next-ui-kit-v2/src/components/Checkbox/",
+          "packages/erp-next-ui-kit-v2/stories/Components/Checkbox/",
+          "packages/erp-next-ui-kit-v2/tests/components/Checkbox/"
+        ],
+        "mustContain": [{ "file": "CheckboxGroup.tsx", "token": "onKeyDown" }],
+        "noRawHexInComponents": true,
+        "conventionsClean": true,
+        "testCountDelta": "positive"
+      }
+    },
+    {
+      "key": "PROJ-3022",
+      "pr": 800,
+      "mergedCommit": "a821a6b3",
+      "repo": "erp-next-ui-monorepo",
+      "lesson": "ESCAPED DEFECT against PROJ-2899's Multiselect — per-size field padding comes from each variant node, and an scss spec test pins it",
+      "escapeAgainst": "Multiselect",
+      "expect": {
+        "filesTouched": [
+          "packages/erp-next-ui-kit-v2/src/components/Multiselect/",
+          "packages/erp-next-ui-kit-v2/stories/Components/Multiselect/",
+          "packages/erp-next-ui-kit-v2/tests/components/Multiselect/"
+        ],
+        "mustContain": [{ "file": "Multiselect.module.scss", "token": "padding" }],
+        "noRawHexInComponents": true,
+        "conventionsClean": true,
+        "testCountDelta": "positive"
+      }
+    },
+    {
+      "key": "PROJ-3025",
+      "pr": 796,
+      "mergedCommit": "1308cbdc",
+      "repo": "erp-next-ui-monorepo",
+      "lesson": "ESCAPED DEFECT against PROJ-2825's Tag — dark-theme swatches are their own variant; a shared token change touches every consumer's spec test",
+      "escapeAgainst": "Tag",
+      "expect": {
+        "filesTouched": [
+          "packages/erp-next-ui-kit-v2/src/components/Tag/",
+          "packages/erp-next-ui-kit-v2/src/styles/tokens/_tag.scss",
+          "packages/erp-next-ui-kit-v2/tests/components/Tag/"
+        ],
+        "mustContain": [
+          { "file": "Tag.module.scss", "token": "icon-secondary" },
+          { "file": "_tag.scss", "token": "tag-" }
+        ],
+        "noRawHexInComponents": true,
+        "conventionsClean": true,
+        "testCountDelta": "positive"
+      }
+    },
+    {
+      "key": "PROJ-3026",
+      "pr": 791,
+      "mergedCommit": "50a3df4a",
+      "repo": "erp-next-ui-monorepo",
+      "lesson": "a dismissible story must actually remove the tag — demo wrappers hold their own state",
+      "expect": {
+        "filesTouched": [
+          "packages/erp-next-ui-kit-v2/stories/Components/Tag/",
+          "packages/erp-next-ui-kit-v2/tests/components/Tag/"
+        ],
+        "mustContain": [{ "file": "Tag.stories.tsx", "token": "useState" }],
+        "noRawHexInComponents": true,
+        "conventionsClean": true,
+        "testCountDelta": "positive"
+      }
+    },
+    {
+      "key": "PROJ-3027",
+      "pr": 792,
+      "mergedCommit": "74a1b640",
+      "repo": "erp-next-ui-monorepo",
+      "lesson": "ESCAPED DEFECT against PROJ-2825's TagGroup — the overflow label is an accessible name and must pluralize",
+      "escapeAgainst": "TagGroup",
+      "expect": {
+        "filesTouched": [
+          "packages/erp-next-ui-kit-v2/src/components/TagGroup/",
+          "packages/erp-next-ui-kit-v2/stories/Components/TagGroup/",
+          "packages/erp-next-ui-kit-v2/tests/components/TagGroup/"
+        ],
+        "mustContain": [{ "file": "TagGroup.tsx", "token": "aria-label" }],
+        "noRawHexInComponents": true,
+        "conventionsClean": true,
+        "testCountDelta": "positive"
+      }
+    },
+    {
+      "key": "PROJ-3028",
+      "pr": 793,
+      "mergedCommit": "efa66b93",
+      "repo": "erp-next-ui-monorepo",
+      "lesson": "ESCAPED DEFECT against PROJ-2825's Tag — per-size vertical padding is per-variant; an scss-only fix needs no new it() block",
+      "escapeAgainst": "Tag",
+      "expect": {
+        "filesTouched": [
+          "packages/erp-next-ui-kit-v2/src/components/Tag/Tag.module.scss",
+          "packages/erp-next-ui-kit-v2/tests/components/Tag/"
+        ],
+        "mustContain": [{ "file": "Tag.module.scss", "token": "padding" }],
+        "noRawHexInComponents": true,
+        "conventionsClean": true,
+        "testCountDelta": "zero"
+      }
+    }
+  ]
+}

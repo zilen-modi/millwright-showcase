@@ -1,0 +1,47 @@
+{
+  "generatedAt": "2026-08-03T06:07:49.512Z",
+  "diff": "/tmp/bad.patch",
+  "golden": "~/workspace/autopilot/eval/golden-set.json",
+  "results": [
+    {
+      "key": "PROJ-2825",
+      "pr": 754,
+      "score": 0.067,
+      "pass": false,
+      "checks": [
+        {
+          "name": "file-overlap",
+          "pass": false,
+          "detail": "1/2 expected path(s) matched, 1 unexpected file(s) changed",
+          "score": 0.333
+        },
+        {
+          "name": "must-contain",
+          "pass": false,
+          "detail": "missing: _tag.scss::tag-neutral-background",
+          "score": 0
+        },
+        {
+          "name": "no-raw-hex-in-components",
+          "pass": false,
+          "detail": "raw hex found in: packages/erp-next-ui-kit-v2/src/components/Tag/Tag.module.scss",
+          "score": 0
+        },
+        {
+          "name": "test-count-delta",
+          "pass": false,
+          "detail": "expected positive, produced delta 0",
+          "score": 0
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "worst": [
+      "PROJ-2825"
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "_comment": "USD per 1,000,000 tokens. EDIT to match your actual plan. These are equivalent-API-cost estimates; on a Max/subscription plan the marginal cash cost may be ~0 but this still tells you where the token spend goes. Cache reads are priced at ~10% of input by default.",
+  "currency": "USD",
+  "cacheReadMultiplier": 0.1,
+  "_outputRatio": "When a stage records only a `tokensTotal` (real subagent usage), split it this fraction as output tokens for pricing.",
+  "outputRatio": 0.3,
+  "models": {
+    "claude-opus-4-8":       { "in": 15.0, "out": 75.0 },
+    "claude-opus-5":         { "in": 15.0, "out": 75.0 },
+    "claude-sonnet-5":       { "in": 3.0,  "out": 15.0 },
+    "claude-haiku-4-5":      { "in": 0.8,  "out": 4.0 },
+    "claude-fable-5":        { "in": 1.0,  "out": 5.0 },
+    "_default":              { "in": 3.0,  "out": 15.0 }
+  }
+}

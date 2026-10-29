@@ -1,0 +1,44 @@
+{
+  "_comment": "Copy to tickets/<KEY>/e2e-flows.json. Its presence is what makes the e2e rubric dimension applicable - without it the dimension is excluded and the ticket scores as it always did. Run: node scripts/session.mjs && node scripts/e2e.mjs --key <KEY> --flows tickets/<KEY>/e2e-flows.json",
+  "flows": [
+    {
+      "name": "ship screen opens and renders its grid",
+      "steps": [
+        { "action": "goto", "route": "/distribution/transfer/9576/ship", "expectPath": "/distribution/transfer/9576/ship" },
+        { "action": "expectVisible", "selector": "[role=\"grid\"]" },
+        { "action": "expectVisible", "selector": "h1" },
+        { "action": "screenshot", "path": "tickets/PROJ-0000/e2e/ship-screen.png" }
+      ]
+    },
+    {
+      "name": "qty cell reports the real validation message, not a generic one",
+      "steps": [
+        { "action": "goto", "route": "/distribution/transfer/9576/ship" },
+        { "action": "click", "selector": "[role=\"gridcell\"][aria-colindex=\"4\"]" },
+        { "action": "fill", "selector": "[role=\"gridcell\"][aria-colindex=\"4\"] input", "value": "99999" },
+        { "action": "press", "selector": "[role=\"gridcell\"][aria-colindex=\"4\"] input", "key": "Enter" },
+        { "action": "expectText", "selector": "[role=\"alert\"]", "text": "Selected exceeds ordered" }
+      ]
+    },
+    {
+      "name": "Escape from a cell editor returns focus to the cell",
+      "steps": [
+        { "action": "goto", "route": "/distribution/transfer/9576/ship" },
+        { "action": "click", "selector": "[role=\"gridcell\"][aria-colindex=\"4\"]" },
+        { "action": "press", "selector": "[role=\"gridcell\"][aria-colindex=\"4\"] input", "key": "Escape" },
+        { "action": "expectVisible", "selector": "[role=\"gridcell\"][aria-colindex=\"4\"]:focus" }
+      ]
+    },
+    {
+      "_comment": "A flow that persists anything needs BOTH \"writes\": true here and --allow-writes on the command. The backend is real and the test account's actions are real.",
+      "name": "saving the transfer persists the selected quantity",
+      "writes": true,
+      "steps": [
+        { "action": "goto", "route": "/distribution/transfer/9576/ship" },
+        { "action": "fill", "selector": "[role=\"gridcell\"][aria-colindex=\"4\"] input", "value": "1" },
+        { "action": "submit", "selector": "button:has-text(\"Save\")" },
+        { "action": "expectText", "selector": "[role=\"status\"]", "text": "saved" }
+      ]
+    }
+  ]
+}

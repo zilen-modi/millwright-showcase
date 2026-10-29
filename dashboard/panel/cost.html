@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Millwright - Cost</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNGY0NmU1Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzgxOGNmOCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0idXJsKCNnKSIvPgogIDxwYXRoIGQ9Ik0xMSAxMC41IEwxNyAxNiBMMTEgMjEuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjMuMSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgPGNpcmNsZSBjeD0iMjEuNSIgY3k9IjIxLjUiIHI9IjEuOSIgZmlsbD0iI2ZmZiIvPgo8L3N2Zz4K" />
+  <link rel="stylesheet" href="/panel.css" />
+</head>
+<body>
+  <header>
+    <h1>Millwright <span class="tag">· control panel</span></h1>
+    <nav>
+      <a href="/">Console</a>
+      <a href="/board">Board</a>
+      <a href="/cost" class="active">Cost</a>
+      <a href="/pr-review">Review</a>
+    </nav>
+    <span class="spacer"></span>
+    <span class="live" id="live"><span class="dot"></span><span id="live-label">connecting…</span></span>
+    <a class="icon-btn" href="/config" title="Config" aria-label="Config"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></a>
+  </header>
+  <div class="wrap">
+    <div class="kpis" id="kpis"></div>
+
+    <div class="card">
+      <div class="card-headrow">
+        <h2>Per-ticket cost</h2>
+        <div class="filters">
+          <input id="ticket-filter" class="filter-input" type="text" placeholder="Filter by key or summary…" autocomplete="off" />
+          <select id="ticket-status-filter" class="filter-select"><option value="">All statuses</option></select>
+        </div>
+      </div>
+      <div class="tablecard">
+        <table id="ticket-table"><thead><tr>
+          <th>Ticket</th><th>Summary</th><th class="num">Cost</th><th class="num">Tokens</th><th>Status</th><th>Updated</th><th>PR</th>
+        </tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-headrow">
+        <h2>Per-PR-review cost</h2>
+        <div class="filters">
+          <input id="pr-filter" class="filter-input" type="text" placeholder="Filter by PR ref or title…" autocomplete="off" />
+          <select id="pr-owner-filter" class="filter-select">
+            <option value="">All owners</option>
+            <option value="mine">Mine</option>
+            <option value="other">Others</option>
+          </select>
+        </div>
+      </div>
+      <div class="tablecard">
+        <table id="pr-cost-table"><thead><tr>
+          <th>PR</th><th>Title</th><th class="num">Cost</th><th class="num">Tokens</th><th>Owner</th><th>Result</th><th>Updated</th>
+        </tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Per-stage breakdown</h2>
+      <div class="tablecard">
+        <table id="stage-table"><thead><tr>
+          <th>Stage</th><th class="num">Cost</th><th class="num">Tokens</th><th class="num">Events</th><th class="num">Avg duration</th>
+        </tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+
+    <div class="card" id="budget-card">
+      <h2>Budget vs cap <span class="muted" id="cap-note"></span></h2>
+      <div id="budget-bars"></div>
+    </div>
+  </div>
+  <script src="/cost.js"></script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+{
+  "name": "autopilot",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Autonomous Jira ticket resolution — deterministic scaffolding (scripts, schemas, dashboard).",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dashboard": "node dashboard/build-dashboard.mjs",
+    "panel": "npm run panel:build && node dashboard/server.mjs",
+    "panel:build": "npm --prefix dashboard/ui run build",
+    "panel:install": "npm --prefix dashboard/ui install",
+    "panel:dev": "npm --prefix dashboard/ui run dev",
+    "panel:serve": "node dashboard/server.mjs",
+    "validate": "node scripts/validate-config.mjs"
+  },
+  "dependencies": {
+    "crypto-js": "^4.2.0",
+    "execa": "^9.5.2",
+    "p-retry": "^6.2.1",
+    "pixelmatch": "^7.2.0",
+    "pngjs": "^7.0.0",
+    "simple-git": "^3.27.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.1",
+    "vitest": "^2.1.8"
+  }
+}

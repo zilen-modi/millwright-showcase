@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "_comment": "Phase 5 autonomy: which tickets Autopilot picks up unattended, and how far it goes without a human.",
+
+  "jira": { "site": "acme.atlassian.net", "project": "PROJ" },
+
+  "_jql": "Candidates to auto-resolve. Gate on an explicit 'autopilot' label so nothing runs by surprise.",
+  "jql": "project = PROJ AND labels = autopilot AND statusCategory != Done ORDER BY priority DESC, created ASC",
+
+  "maxPerRun": 2,
+  "_maxPerRun": "Hard cap on tickets resolved per scan — keeps cost/blast-radius bounded.",
+
+  "mode": "build-verify-notify",
+  "_mode": "dry-run = intake→plan only (report). build-verify-notify (default) = run through REVIEW, leave a verified branch + notify + post a step-detail Jira comment (audit trail), do NOT open a PR. auto-draft-pr = same comment plus open a DRAFT PR (human still merges). Never merges.",
+
+  "skipIfBranchExists": true,
+  "_skipIfBranchExists": "Don't re-process a ticket that already has an autopilot/<KEY> branch.",
+
+  "notify": true,
+  "_notify": "Push a notification per ticket outcome (ready / blocked / failed).",
+
+  "owner": { "accountId": "712020:c9176ab2-c589-43fb-b2ba-96560eac009a", "displayName": "Zilen Modi" },
+  "_owner": "Human accountable for Autopilot output. EVERY autonomous-run Jira comment MUST @-mention this person (ADF mention node with this accountId) so they're tagged/notified.",
+
+  "runLogDir": "autopilot/queue-runs"
+}

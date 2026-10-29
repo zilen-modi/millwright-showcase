@@ -1,0 +1,201 @@
+{
+  "version": 1,
+  "generatedFrom": "ACME-ECOSYSTEM-GUIDE.md + live package.json scripts (2026-07-30)",
+  "workspaceRoot": "~/workspace",
+  "jira": { "site": "acme.atlassian.net", "cloudId": "ecbd4f47-99d4-4cac-a568-1136ab5d2ccb", "project": "PROJ" },
+  "notes": [
+    "The router uses this manifest for a FIRST GUESS, then confirms against real code before committing (ground-in-code principle).",
+    "The ecosystem guide is a prior, not the truth. Where this manifest and the guide disagree, code wins — corrections are noted per-repo."
+  ],
+
+  "repos": [
+    {
+      "id": "erp-next-ui-monorepo",
+      "github": { "owner": "acme-it-erp", "repo": "erp-next-ui-monorepo" },
+      "layer": "frontend",
+      "purpose": "Next.js 14 web app + internal UI kit(s). What users see.",
+      "routeKeywords": ["component", "ui kit", "screen", "page", "form", "modal", "input",
+                        "multiselect", "combobox", "dropdown", "storybook", "figma", "carbon", "styling"],
+      "correction": "Guide says 'Vanilla Extract'. Real components use SCSS-modules (*.module.scss) + CVA (*.cva.ts). Code wins.",
+      "subPackages": {
+        "note": "This monorepo (yarn workspaces + turbo) contains TWO UI kits and the app. Pick the right one.",
+        "app": {
+          "path": "frontend",
+          "turboName": "erp-next-fe",
+          "what": "The Next.js 14 App Router application (confusingly named erp-next-fe, NOT the legacy repo)."
+        },
+        "uiKitV1": {
+          "path": "packages/erp-next-ui-kit",
+          "pkgName": "@acme-it-erp/acme-ui-kit-next",
+          "what": "Older/current UI kit. Combobox reference lives here (lib/components/Combobox).",
+          "hasTests": false,
+          "verifyWith": ["typecheck:uikit", "lint:uikit", "build:uikit"]
+        },
+        "uiKitV2": {
+          "path": "packages/erp-next-ui-kit-v2",
+          "pkgName": "@acme-it-erp/erp-next-ui-kit-v2",
+          "what": "UI Kit 2.0 — the target of the 'UI Kit 2.0' epic (PROJ-2622). Has real tests.",
+          "hasTests": true,
+          "verifyWith": ["typecheck:uikit-v2", "lint:uikit-v2", "test:uikit-v2", "build:uikit-v2"]
+        }
+      },
+      "commands": {
+        "install": "yarn install  (requires NODE_AUTH_TOKEN GitHub PAT for private @acme-it-erp/* packages)",
+        "build": "yarn build",
+        "test": "yarn test",
+        "lint": "yarn lint",
+        "typecheck": "yarn typecheck",
+        "storybook": "yarn storybook  (or per-kit: dev:uikit / dev:uikit-v2)",
+        "perKit": {
+          "uiKitV2": { "typecheck": "yarn typecheck:uikit-v2", "lint": "yarn lint:uikit-v2", "test": "yarn test:uikit-v2", "build": "yarn build:uikit-v2" },
+          "uiKitV1": { "typecheck": "yarn typecheck:uikit", "lint": "yarn lint:uikit", "build": "yarn build:uikit" }
+        }
+      },
+      "needs": { "githubPAT": "NODE_AUTH_TOKEN", "figma": true },
+      "buildable": true
+    },
+
+    {
+      "id": "erp-next-backend",
+      "github": { "owner": "acme-it-erp", "repo": "erp-next-backend" },
+      "layer": "api",
+      "purpose": "Express 4 'modulith' REST API. Verifies JWT, enforces policies, orchestrates data via adapters.",
+      "routeKeywords": ["endpoint", "api", "route", "controller", "service", "module", "business logic",
+                        "transfer", "inventory", "product", "finance", "auth", "feature flag", "lock", "policy enforcement"],
+      "structure": "No src/. app.ts + index.ts at root. Feature code in modules/, cross-cutting in shared/. Path aliases @distribution/* @inventory/* @auth/* @shared/*.",
+      "modules": {
+        "auth": "/api/v1/auth, /api/v1/access, /api/v1/delegations",
+        "distribution": "/api/distribution/v1/transfers, /bom, /ship-vias",
+        "inventory": "/api/inventory/v1",
+        "product": "/api/product/v1",
+        "finance": "/api/v1/finance",
+        "shared": "/api/v1/{branch,feature-flags,system/locks}"
+      },
+      "correction": "Never touches UniVerse directly — always via new CombinedAdapter<T>(ModelSpec, ctx). @types/express is v5 while Express is v4 (known skew). 500 handler leaks err.message (known issue).",
+      "commands": {
+        "install": "yarn install  (requires NODE_AUTH_TOKEN)",
+        "dev": "yarn dev:watch",
+        "build": "yarn build  (ts-node; PM2 transpiles at runtime, no dist shipped)",
+        "test": "yarn test  (jest + supertest)",
+        "typecheck": "yarn typecheck",
+        "lint": "yarn lint"
+      },
+      "needs": { "githubPAT": "NODE_AUTH_TOKEN", "env": ["MONGO_URI", "UNIVERSE_BASE_URL(for universe modes)"] },
+      "buildable": true
+    },
+
+    {
+      "id": "erp-next-open-api",
+      "github": { "owner": "acme-it-erp", "repo": "erp-next-open-api" },
+      "layer": "contract",
+      "purpose": "Single source of truth for API types. One authored spec → 3 published packages (frontend/backend/schemas).",
+      "routeKeywords": ["api type", "contract", "request shape", "response shape", "openapi", "zod schema", "dto", "model type"],
+      "correction": "TWO specs: src/openapi/*.ts generates openapi.json (FE+BE types). generate:zod + backend validator read a SEPARATE, stale, hand-maintained openapi.yaml. README is stale — trust package.json + CHANGELOG. No auto-propagation: consumers must bump the dep.",
+      "commands": {
+        "genSpec": "yarn generate:spec  (tsx src/openapi/index.ts)",
+        "regenFrontend": "yarn regenerate:frontend",
+        "regenBackend": "yarn regenerate:backend",
+        "genZod": "yarn generate:zod  (reads the stale openapi.yaml — must be updated too)",
+        "buildBackend": "yarn build:backend",
+        "buildFrontend": "yarn build:frontend"
+      },
+      "dependencyRule": "CONTRACT-FIRST: change here BEFORE its consumers (FE/BE), then bump the dep in each.",
+      "buildable": true
+    },
+
+    {
+      "id": "erp-next-adapters",
+      "github": { "owner": "acme-it-erp", "repo": "erp-next-adapters" },
+      "layer": "data-bridge",
+      "purpose": "Lerna+Nx monorepo. Repository-pattern adapters over UniVerse (via python-layer) + MongoDB, with dual-write. Also ships @acme-it-erp/logger + shared-utils used ecosystem-wide.",
+      "routeKeywords": ["adapter", "repository", "dual-write", "universe mapping", "dictionary", "mongodb adapter", "combine", "logger", "shared-utils", "modelspec"],
+      "packages": ["@acme-it-erp/universe-adapter", "@acme-it-erp/mongodb-adapter", "@acme-it-erp/combine-adapter (dir: combined-adapter)", "@acme-it-erp/logger", "@acme-it-erp/shared-utils"],
+      "correction": "combined-adapter/package.json may contain an UNRESOLVED git merge conflict in peerDependencies — resolve before yarn install. Dir is combined-adapter but package is combine-adapter. universe-adapter is an HTTP client to the python-layer; it never opens a UniVerse socket.",
+      "commands": {
+        "install": "yarn clean:install  (or yarn install)",
+        "build": "yarn build  (lerna run build)",
+        "test": "yarn test  (NODE_ENV=dev lerna run test)",
+        "lint": "yarn lint",
+        "verify": "yarn verify",
+        "perPackage": "yarn test:combinedAdapter | test:universeAdapter | test:mongodbAdapter | test:sharedUtils | test:logger"
+      },
+      "buildable": true
+    },
+
+    {
+      "id": "erp-next-auth-policies",
+      "github": { "owner": "acme-it-erp", "repo": "erp-next-auth-policies" },
+      "layer": "auth-vocabulary",
+      "purpose": "The RBAC catalog: Policy.*, Permissions, Role enum + hierarchy, ROLE_PERMISSIONS, PolicyDefinition shape. Zero runtime deps. Consumed by FE + BE.",
+      "routeKeywords": ["policy", "permission", "role", "rbac", "access control", "grant", "role hierarchy"],
+      "correction": "minAssurance and blockedBranches are declared but NOT enforced today. Role matching is plain string membership, not hierarchy-aware; hierarchy cascades only through permissions.",
+      "commands": {
+        "build": "yarn build",
+        "typecheck": "yarn types",
+        "lint": "yarn lint",
+        "verify": "yarn verify  (lint + types; NO tests in this package)"
+      },
+      "dependencyRule": "When adding a permission: ship a policies release FIRST, then bump middleware.",
+      "buildable": true
+    },
+
+    {
+      "id": "erp-next-auth-middleware",
+      "github": { "owner": "acme-it-erp", "repo": "erp-next-auth-middleware" },
+      "layer": "auth-engine",
+      "purpose": "The auth engine (jose): verifyToken, decodeToken, extractToken, evaluatePolicy (401→403→403), projectPolicy. Pure functions. Consumed by FE + BE.",
+      "routeKeywords": ["token", "jwt", "verify token", "evaluate policy", "auth middleware", "jose", "claims"],
+      "correction": "Despite the name it ships NO Express middleware — only pure functions. The backend writes its own requirePolicy wrapper. Pins a specific auth-policies version (version-skew aware).",
+      "commands": {
+        "build": "yarn build",
+        "test": "yarn test  (jest --coverage)",
+        "typecheck": "yarn types",
+        "lint": "yarn lint",
+        "verify": "yarn verify  (lint + types + test)"
+      },
+      "buildable": true
+    },
+
+    {
+      "id": "erp-next-universe-python-layer",
+      "github": { "owner": "acme-it-erp", "repo": "erp-next-universe-python-layer" },
+      "layer": "legacy-bridge",
+      "purpose": "FastAPI service — the ONLY component that speaks UniVerse MultiValue (via uopy). Exposes /api/v1/universe/* over HTTP/JSON.",
+      "routeKeywords": ["universe", "multivalue", "uopy", "fastapi", "w5 lock", "readu", "subroutine", "python layer", "green screen data"],
+      "correction": "Requires FortiClient VPN to reach the UniVerse host (private address). Writes issue a redundant second W5RELEASE (flagged TEMP).",
+      "commands": {
+        "install": "pip install -r requirements.txt  (has pyproject.toml)",
+        "run": "uvicorn app.main:app --reload --port 6000",
+        "test": "pytest  (tests/ dir present)"
+      },
+      "needs": { "vpn": "FortiClient", "env": ["MV_USERNAME", "MV_PASSWORD"] },
+      "buildable": true
+    },
+
+    {
+      "id": "acme-resources-main",
+      "layer": "reference",
+      "purpose": "Legacy 'Rosetta Stone' — MVBasic source, UniVerse dicts, legacy→modern field maps, screenshots. Knowledge base, NOT code.",
+      "routeKeywords": ["legacy screen", "mvbasic", "dictionary mapping", "port legacy", "as-is", "green screen reference"],
+      "usage": "CONSULT (read-only) when porting a legacy screen. Never imported at runtime, never built.",
+      "buildable": false
+    },
+
+    {
+      "id": "erp-next-fe",
+      "github": { "owner": "acme-it-erp", "repo": "erp-next-fe" },
+      "layer": "frontend-legacy",
+      "purpose": "Superseded Vite+React Router+Formik+TanStack SPA. Historical reference only.",
+      "routeKeywords": [],
+      "policy": "DO NOT TOUCH. Never route new work here. If a ticket seems to point here, it almost certainly means the monorepo app instead — confirm with the user.",
+      "buildable": false
+    }
+  ],
+
+  "crossRepoWorkflows": [
+    { "name": "backend-backed feature (end to end)", "order": ["erp-next-open-api", "erp-next-adapters", "erp-next-backend", "erp-next-ui-monorepo"] },
+    { "name": "port legacy (UniVerse) screen", "order": ["acme-resources-main(ref)", "erp-next-universe-python-layer", "erp-next-adapters", "erp-next-backend", "erp-next-ui-monorepo"] },
+    { "name": "permission / policy change", "order": ["erp-next-auth-policies", "erp-next-auth-middleware", "erp-next-backend", "erp-next-ui-monorepo"] },
+    { "name": "pure UI component (no backend)", "order": ["erp-next-ui-monorepo"] }
+  ]
+}

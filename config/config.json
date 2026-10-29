@@ -1,0 +1,143 @@
+{
+  "version": 1,
+  "_comment": "Autopilot runtime config. Defaults chosen for local, on-demand, autonomous-through-PR. Change freely.",
+  "gates": {
+    "afterIntake": "auto",
+    "afterRoute": "confirm-if-low-confidence",
+    "afterPreflight": "confirm-if-existing-work",
+    "afterPlan": "auto",
+    "afterVerify": "auto-if-green",
+    "beforePR": "confirm",
+    "merge": "human-only"
+  },
+  "models": {
+    "_comment": "Opus for reasoning (orchestration/architecture/planning/review); Sonnet/Haiku for development & mechanical stages. Aliases resolve to: opus=claude-opus-4-8, sonnet=claude-sonnet-5, haiku=claude-haiku-4-5.",
+    "orchestrator": "opus",
+    "intake": "haiku",
+    "route": "sonnet",
+    "preflight": "sonnet",
+    "plan": "opus",
+    "build": "sonnet",
+    "verify": "sonnet",
+    "review": "opus",
+    "ship": "haiku"
+  },
+  "routeConfidenceThreshold": 0.7,
+  "verifyMaxLoops": 3,
+  "reviewRepairLoops": 1,
+  "clarify": "ask-locally",
+  "_clarify_options": "ask-locally | comment-and-pause | best-effort-note. Default ask-locally: on-demand runs, you're watching, avoids spamming Jira.",
+  "branchPrefix": "",
+  "baseBranch": "dev",
+  "prPerRepo": true,
+  "prDraft": false,
+  "jira": {
+    "postPRComment": true,
+    "transitionAfterShip": "In Development",
+    "_transitionNote": "PROJ workflow has NO 'In Review' status. Verified transitions from Backlog: 'In Development' (id 7, → Development), 'Designing', 'Blocked by Dependency', 'Completed' (→ Done), 'Canceled'. QA 'Testing' is reachable only later, not from Backlog. Always confirm via getTransitionsForJiraIssue before relying on a name.",
+    "logWork": false
+  },
+  "testDiscipline": "implement-plus-tests",
+  "_testDiscipline_options": "implement-plus-tests (v1 default) | story-tdd (frozen-tests-first via existing .story/ flow)",
+  "worktreeDir": "../.wt",
+  "teardownWorktreesAfterShip": true,
+  "loop": {
+    "_comment": "Phase 1 control plane — numeric rubric goal + budget cap + stall detector for the repair loop (see scripts/loop.mjs).",
+    "rubricTarget": 0.9,
+    "_budgetUsdPerTicket_comment": "null = no per-ticket cap. Set a positive number to re-arm it. The cap was stopping real work twice over: loopDecision returned stop-budget mid-repair, and evaluateBudgetGate silently skipped over-cap tickets out of the build queue. maxRepairRounds and stallRounds remain the bounds on a runaway loop.",
+    "budgetUsdPerTicket": null,
+    "maxRepairRounds": 4,
+    "stallRounds": 3,
+    "rubricWeights": {
+      "_comment": "codeQuality (reusability/DRY, from quality-agent) added 2026-08-06 — fuzzy-scored, not binary-gated like conventions/a11y. Starting weights; tune after real tickets.",
+      "_e2e_comment": "e2e added 2026-10-21: flows driven against the running stack, scored from tickets/<KEY>/e2e-report.json. A ticket with no e2e-flows.json EXCLUDES the dimension, so nothing is penalised for not having flows yet. Its weight came mostly out of visualDiff, which is over-weighted for how brittle it is - it has twice held a ticket below an unreachable target over things that were not code defects (PROJ-3645 thumbnail, PROJ-3907). Weights must sum to ~1 and are recorded per round in rubric.jsonl, so older receipts stay readable against the weights they actually used.",
+      "visualDiff": 0.22,
+      "e2e": 0.16,
+      "acCoverage": 0.22,
+      "conventions": 0.16,
+      "a11y": 0.12,
+      "codeQuality": 0.12
+    },
+    "e2e": {
+      "_comment": "The functional browser gate (scripts/e2e.mjs). Flows live in tickets/<KEY>/e2e-flows.json; without that file the dimension is not applicable. appBase/apiBase default to the local stack and are overridden by E2E_APP_BASE / E2E_API_BASE in config/*.env, where the test-account credentials also live.",
+      "appBase": "http://localhost:3000",
+      "apiBase": "http://localhost:4000",
+      "timeoutMs": 15000,
+      "settleMs": 400,
+      "allowWrites": false
+    }
+  },
+  "prSelfReview": {
+    "_comment": "SHIP-time self-review of the PR Autopilot just created: review the PR diff, auto-fix findings whose severity is in fixSeverities (commit + push to the SAME PR), re-review up to maxRounds; lower-severity findings become one PR comment. Only the Autopilot-created PR; external human/QA comments are the separate pr-feedback loop. Never merges; QA subtasks untouched.",
+    "enabled": true,
+    "fixSeverities": [
+      "high",
+      "medium"
+    ],
+    "maxRounds": 2
+  },
+  "prReviewSelfFix": {
+    "_comment": "Ad-hoc /review-pr flow (2026-08-06): when the PR under review is the user's OWN (author.login == `gh api user` login), auto-fix findings whose severity is in fixSeverities and push to the SAME PR branch — mirrors prSelfReview exactly, no extra confirmation click. When the PR is NOT the user's own, this block is never consulted: report-only, no GitHub write of any kind. maxRounds=1 (lower than prSelfReview's 2) — each round re-runs the full verify gate (typecheck+lint+test+build), and an ad-hoc review is meant to be a lighter-weight check than the full ticket pipeline; raise it if 1 round proves insufficient in practice.",
+    "enabled": true,
+    "fixSeverities": [
+      "high",
+      "medium"
+    ],
+    "maxRounds": 1
+  },
+  "escalation": {
+    "_comment": "Phase 2 — when Autopilot hands back to a human.",
+    "confidenceThreshold": 0.7,
+    "highStakesRequiresHuman": true,
+    "channels": [
+      "jira",
+      "notify"
+    ]
+  },
+  "selfImprovement": {
+    "_comment": "Phase 3 — champion/challenger prompt optimization, holdout-validated.",
+    "improveSetSize": 25,
+    "holdoutSetSize": 15,
+    "promotionMargin": 0.03,
+    "minHoldoutCases": 10,
+    "regressionFloor": 0.8
+  },
+  "critic": {
+    "_comment": "Devil's-advocate builder/critic.",
+    "maxRounds": 3
+  },
+  "ux": {
+    "_comment": "UX-flow usability rubric.",
+    "requiredChecks": [
+      "keyboard-operable",
+      "focus-visible",
+      "escape-closes",
+      "roles-correct",
+      "no-dead-ends",
+      "error-recoverable"
+    ],
+    "target": 0.9
+  },
+  "followup": {
+    "_comment": "Nudge/escalate stale PRs + open escalations.",
+    "nudgeAfterDays": 2,
+    "escalateAfterDays": 5
+  },
+  "scheduler": {
+    "_comment": "Panel-managed cron. When enabled, the panel scans Jira for autopilot-labelled tickets every intervalMinutes (scan + notify only — no code, no PR). Runs while the panel process is up.",
+    "enabled": false,
+    "intervalMinutes": 50
+  },
+  "prInbox": {
+    "_comment": "The Review tab's inbox: which open PRs are waiting on this operator's review, and which are theirs. Read-only against GitHub, so it sweeps even while paused. Ground truth is one GraphQL call per repo in repo-manifest.json (the search index lags); the two @me searches only discover PRs in repos outside the manifest.",
+    "enabled": true,
+    "intervalMinutes": 5,
+    "includeOutsideManifest": true,
+    "_expectLogin_comment": "Deliberately the personal account, not work-account. That account cannot read the acme-it-erp repos (gh api returns 404), so while it is the active gh account the inbox sweeps personal repos only and no work PR will ever appear here. That is the chosen setup, not a bug to fix: do not switch this back without also switching the active gh account, or the mismatch guard starts crying wolf again.",
+    "expectLogin": "work-account",
+    "maxOpenPerRepo": 100
+  },
+  "paused": false,
+  "_paused": "Global kill-switch. When true, the panel cancels active runs and blocks all new ones (including the scheduled scan).",
+  "autoBuild": false
+}

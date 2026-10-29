@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Millwright - Board</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNGY0NmU1Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzgxOGNmOCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0idXJsKCNnKSIvPgogIDxwYXRoIGQ9Ik0xMSAxMC41IEwxNyAxNiBMMTEgMjEuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjMuMSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgPGNpcmNsZSBjeD0iMjEuNSIgY3k9IjIxLjUiIHI9IjEuOSIgZmlsbD0iI2ZmZiIvPgo8L3N2Zz4K" />
+  <link rel="stylesheet" href="/panel.css" />
+</head>
+<body>
+  <header>
+    <h1>Millwright <span class="tag">· control panel</span></h1>
+    <nav>
+      <a href="/">Console</a>
+      <a href="/board" class="active">Board</a>
+      <a href="/cost">Cost</a>
+      <a href="/pr-review">Review</a>
+    </nav>
+    <span class="spacer"></span>
+    <span class="live" id="live"><span class="dot"></span><span id="live-label">connecting…</span></span>
+    <a class="icon-btn" href="/config" title="Config" aria-label="Config"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></a>
+  </header>
+  <div class="wrap">
+    <div class="launcher">
+      <p class="launcher-title">Start work on a ticket</p>
+      <div class="launcher-row">
+        <input id="tkt-input" type="text" autocomplete="off" spellcheck="false"
+               placeholder="Paste a ticket key (PROJ-1234) or a Jira URL…" />
+        <div class="seg" id="mode-seg">
+          <button data-mode="plan" class="active">Plan</button>
+          <button data-mode="review">Review</button>
+        </div>
+        <button id="start-btn" class="primary">Start</button>
+      </div>
+      <div class="launcher-err" id="tkt-err" hidden></div>
+      <div class="activeruns" id="activeruns"></div>
+    </div>
+    <div class="board" id="board"></div>
+  </div>
+  <script src="/kanban.js"></script>
+</body>
+</html>

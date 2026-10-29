@@ -1,0 +1,21 @@
+{
+  "_comment": "Phase 3 champion/challenger registry. `champions` maps an agent name to its currently-shipping (champion) prompt version + where that prompt lives; `promotionLog` is an append-only history of challenger promotions (see scripts/champion-lib.mjs recordPromotion). Seeded at v1 with the agents as they existed when Phase 3 landed — nothing has been promoted yet.",
+  "champions": {
+    "coder-agent": {
+      "version": 1,
+      "ref": ".claude/agents/coder-agent.md",
+      "promotedAt": null
+    },
+    "router-agent": {
+      "version": 1,
+      "ref": ".claude/agents/router-agent.md",
+      "promotedAt": null
+    },
+    "story-reviewer": {
+      "version": 1,
+      "ref": "builtin",
+      "promotedAt": null
+    }
+  },
+  "promotionLog": []
+}
