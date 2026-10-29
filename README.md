@@ -1,5 +1,7 @@
 # Millwright
 
+[![CI](https://github.com/zilen-modi/millwright-showcase/actions/workflows/ci.yml/badge.svg)](https://github.com/zilen-modi/millwright-showcase/actions/workflows/ci.yml)
+
 > **Showcase copy.** Built for a real distribution company's ERP modernisation. Client names are replaced with "Acme", ticket keys with `PROJ-n`, and runtime data (run history, reviews, indexes) is left out. The code, tests and design are unchanged.
 
 **Resolve a Jira ticket end to end across the Acme repos, and make every claim it reports checkable.**
